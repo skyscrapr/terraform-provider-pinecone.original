@@ -51,34 +51,22 @@ func TestAccIndexResource_pod_basic(t *testing.T) {
 		Steps: []resource.TestStep{
 			// Create and Read testing
 			{
-				Config: testAccIndexResourceConfig_pod_basic(rName, "1", "1"),
+				Config: testAccIndexResourceConfig_pod_basic(rName, "2"),
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("pinecone_index.test", "id", rName),
 					resource.TestCheckResourceAttr("pinecone_index.test", "name", rName),
 					resource.TestCheckResourceAttr("pinecone_index.test", "dimension", "1536"),
 					resource.TestCheckResourceAttr("pinecone_index.test", "metric", "cosine"),
 					resource.TestCheckResourceAttr("pinecone_index.test", "spec.pod.pod_type", "s1.x1"),
-					resource.TestCheckResourceAttr("pinecone_index.test", "spec.pod.replicas", "1"),
-					resource.TestCheckResourceAttr("pinecone_index.test", "spec.pod.pods", "1"),
+					resource.TestCheckResourceAttr("pinecone_index.test", "spec.pod.replicas", "2"),
+					resource.TestCheckResourceAttr("pinecone_index.test", "spec.pod.pods", "2"),
 					// resource.TestCheckNoResourceAttr("pinecone_index.test", "metadata_config"),
 					// resource.TestCheckNoResourceAttr("pinecone_index.test", "source_collection"),
 				),
 			},
-			// ImportState testing
-			{
-				ResourceName:      "pinecone_index.test",
-				ImportState:       true,
-				ImportStateVerify: true,
-				// ImportStateVerifyIdentifierAttribute: "name",
-				// This is not normally necessary, but is here because this
-				// example code does not have an actual upstream service.
-				// Once the Read method is able to refresh information from
-				// the upstream service, this can be removed.
-				// ImportStateVerifyIgnore: []string{"configurable_attribute", "defaulted"},
-			},
-			// Update not supported
+			// Update testing - not supported
 			// {
-			// 	Config: testAccIndexResourceConfig_pod_basic(rName, "2", "2"),
+			// 	Config: testAccIndexResourceConfig_pod_basic(rName, "2"),
 			// 	Check: resource.ComposeAggregateTestCheckFunc(
 			// 		resource.TestCheckResourceAttr("pinecone_index.test", "id", rName),
 			// 		resource.TestCheckResourceAttr("pinecone_index.test", "name", rName),
@@ -91,6 +79,18 @@ func TestAccIndexResource_pod_basic(t *testing.T) {
 			// 		// resource.TestCheckNoResourceAttr("pinecone_index.test", "source_collection"),
 			// 	),
 			// },
+			// ImportState testing
+			{
+				ResourceName:      "pinecone_index.test",
+				ImportState:       true,
+				ImportStateVerify: true,
+				// ImportStateVerifyIdentifierAttribute: "name",
+				// This is not normally necessary, but is here because this
+				// example code does not have an actual upstream service.
+				// Once the Read method is able to refresh information from
+				// the upstream service, this can be removed.
+				// ImportStateVerifyIgnore: []string{"configurable_attribute", "defaulted"},
+			},
 			// Delete testing automatically occurs in TestCase
 		},
 	})
@@ -134,7 +134,7 @@ resource "pinecone_index" "test" {
 `, name)
 }
 
-func testAccIndexResourceConfig_pod_basic(name string, replicas string, pods string) string {
+func testAccIndexResourceConfig_pod_basic(name string, replicas string) string {
 	return fmt.Sprintf(`
 provider "pinecone" {
 }
@@ -146,11 +146,10 @@ resource "pinecone_index" "test" {
 			environment = "us-west4-gcp"
 			pod_type = "s1.x1"
 			replicas = %q
-			pods = %q
 		}
 	}
 }
-`, name, replicas, pods)
+`, name, replicas)
 }
 
 func testAccIndexResourceConfig_dimension(name string, dimension string) string {
